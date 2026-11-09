@@ -1,0 +1,8 @@
+{"schema":"openai.presentation.layout/v5","unit":"px","slide":{"id":"sl/dxhcg0","index":5,"layout":{"id":"ly/vmtgjuxg","name":"Blank"},"backgroundColor":"rgba(255,255,255,1)","position":{"left":0,"top":0,"width":1280,"height":720}},
+"elements":[
+{"id":"sh/ovqlovml","kind":"textbox","name":"image-title","position":{"left":76,"top":64,"width":900,"height":84},"text":"IMAGE AND TEXT","style":{"fontSize":40,"typeface":"Arial","color":"#2F2925","bold":true,"alignment":"left"},"geometry":"rect","lineWidth":0},
+{"id":"sh/nuhkvql0","kind":"shape","name":"image-slot","position":{"left":78,"top":180,"width":610,"height":430},"geometry":"roundRect","fillColor":"#FFF9E8","lineColor":"#EEDFD2","lineWidth":1},
+{"id":"sh/mt83ml4f","kind":"textbox","name":"image-slot-label","position":{"left":150,"top":360,"width":466,"height":56},"text":"DROP IMAGE HERE","style":{"fontSize":20,"typeface":"Arial","color":"#F58A3C","bold":true,"alignment":"center"},"geometry":"rect","lineWidth":0},
+{"id":"sh/1sz2tg3u","kind":"textbox","name":"image-heading","position":{"left":750,"top":220,"width":410,"height":90},"text":"Supporting headline","style":{"fontSize":32,"typeface":"Arial","color":"#2F2925","bold":true,"alignment":"left"},"geometry":"rect","lineWidth":0},
+{"id":"sh/0rqlkbm9","kind":"textbox","name":"image-body","position":{"left":752,"top":350,"width":400,"height":180},"text":"Use this space for a short explanation that connects directly to the image.","style":{"fontSize":22,"typeface":"Arial","color":"#75685F","alignment":"left"},"geometry":"rect","lineWidth":0}
+]}

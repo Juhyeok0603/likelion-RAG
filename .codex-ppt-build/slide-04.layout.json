@@ -1,0 +1,7 @@
+{"schema":"openai.presentation.layout/v5","unit":"px","slide":{"id":"sl/ugc4p3","index":3,"layout":{"id":"ly/vmtgjuxg","name":"Blank"},"backgroundColor":"rgba(255,255,255,1)","position":{"left":0,"top":0,"width":1280,"height":720}},
+"elements":[
+{"id":"sh/4z6ds36p","kind":"shape","name":"body-field","position":{"left":590,"top":150,"width":600,"height":470},"geometry":"roundRect","fillColor":"#FFF9E8","lineWidth":0},
+{"id":"sh/3yxwzi5k","kind":"textbox","name":"body-title","position":{"left":76,"top":72,"width":780,"height":82},"text":"SLIDE TITLE","style":{"fontSize":40,"typeface":"Arial","color":"#2F2925","bold":true,"alignment":"left"},"geometry":"rect","lineWidth":0},
+{"id":"sh/2xovqdoz","kind":"textbox","name":"body-lead","position":{"left":78,"top":220,"width":430,"height":120},"text":"A concise statement that frames the slide.","style":{"fontSize":28,"typeface":"Arial","color":"#F58A3C","bold":true,"alignment":"left"},"geometry":"rect","lineWidth":0},
+{"id":"sh/hwfux8ne","kind":"textbox","name":"body-content","position":{"left":640,"top":205,"width":500,"height":330},"text":"Add the main content here. Keep the text short enough to scan during a presentation.\n\nUse this area for supporting details, a small list, or a short explanation.","style":{"fontSize":21,"typeface":"Arial","color":"#2F2925","alignment":"left"},"geometry":"rect","lineWidth":0}
+]}

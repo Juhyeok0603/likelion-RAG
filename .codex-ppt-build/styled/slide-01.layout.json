@@ -1,0 +1,10 @@
+{"schema":"openai.presentation.layout/v5","unit":"px","slide":{"id":"sl/ouohgm","index":0,"layout":{"id":"ly/tcvyh87m","name":"Blank"},"backgroundColor":"rgba(255,255,255,1)","position":{"left":0,"top":0,"width":1280,"height":720}},
+"elements":[
+{"id":"im/a1gbu9gz","kind":"image","name":"cover-background","position":{"left":0,"top":0,"width":1280,"height":720},"fit":"cover","alt":"Abstract pale yellow and soft orange layered paper background"},
+{"id":"sh/8fqtkvyl","kind":"shape","name":"cover-label","position":{"left":78,"top":74,"width":214,"height":42},"geometry":"roundRect","fillColor":"#2C221D","lineWidth":0},
+{"id":"sh/tgzad0z6","kind":"textbox","name":"cover-label-text","position":{"left":98,"top":86,"width":175,"height":22},"text":"CREATIVE TEMPLATE","style":{"fontSize":12,"typeface":"Arial","color":"#FFFFFF","bold":true,"alignment":"center"},"geometry":"rect","lineWidth":0},
+{"id":"sh/uh8bm5gr","kind":"textbox","name":"cover-title","position":{"left":78,"top":178,"width":650,"height":220},"text":"PRESENTATION\nTITLE","style":{"fontSize":64,"typeface":"Arial","color":"#2C221D","bold":true,"alignment":"left"},"geometry":"rect","lineWidth":0},
+{"id":"sh/vihsfahc","kind":"textbox","name":"cover-subtitle","position":{"left":82,"top":428,"width":510,"height":56},"text":"Subtitle or short description","style":{"fontSize":24,"typeface":"Arial","color":"#79675C","alignment":"left"},"geometry":"rect","lineWidth":0},
+{"id":"sh/gjatovyx","kind":"textbox","name":"cover-meta","position":{"left":82,"top":604,"width":310,"height":30},"text":"NAME   /   DATE","style":{"fontSize":14,"typeface":"Arial","color":"#E96816","bold":true,"alignment":"left"},"geometry":"rect","lineWidth":0},
+{"id":"sh/hkjah0z2","kind":"textbox","name":"cover-index","position":{"left":1128,"top":596,"width":80,"height":48},"text":"01","style":{"fontSize":22,"typeface":"Arial","color":"#2C221D","bold":true,"alignment":"right"},"geometry":"rect","lineWidth":0}
+]}

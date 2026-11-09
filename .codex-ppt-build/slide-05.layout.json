@@ -1,0 +1,10 @@
+{"schema":"openai.presentation.layout/v5","unit":"px","slide":{"id":"sl/qpz9bc","index":4,"layout":{"id":"ly/vmtgjuxg","name":"Blank"},"backgroundColor":"rgba(255,255,255,1)","position":{"left":0,"top":0,"width":1280,"height":720}},
+"elements":[
+{"id":"sh/vax43mpg","kind":"textbox","name":"compare-title","position":{"left":76,"top":64,"width":900,"height":84},"text":"TWO-COLUMN COMPARISON","style":{"fontSize":40,"typeface":"Arial","color":"#2F2925","bold":true,"alignment":"left"},"geometry":"rect","lineWidth":0},
+{"id":"sh/gbq5c761","kind":"shape","name":"left-field","position":{"left":78,"top":190,"width":530,"height":420},"geometry":"roundRect","fillColor":"#FFF9E8","lineWidth":0},
+{"id":"sh/hczm5c7m","kind":"shape","name":"right-field","position":{"left":670,"top":190,"width":530,"height":420},"geometry":"roundRect","fillColor":"#FFE6CF","lineWidth":0},
+{"id":"sh/id8neho7","kind":"textbox","name":"left-heading","position":{"left":120,"top":230,"width":430,"height":55},"text":"OPTION A","style":{"fontSize":26,"typeface":"Arial","color":"#2F2925","bold":true,"alignment":"left"},"geometry":"rect","lineWidth":0},
+{"id":"sh/3eh47mps","kind":"textbox","name":"left-content","position":{"left":120,"top":325,"width":430,"height":200},"text":"Add the first point of view, approach, or comparison item here.","style":{"fontSize":22,"typeface":"Arial","color":"#75685F","alignment":"left"},"geometry":"rect","lineWidth":0},
+{"id":"sh/4fq5gr6d","kind":"textbox","name":"right-heading","position":{"left":712,"top":230,"width":430,"height":55},"text":"OPTION B","style":{"fontSize":26,"typeface":"Arial","color":"#F58A3C","bold":true,"alignment":"left"},"geometry":"rect","lineWidth":0},
+{"id":"sh/5gzm9w7i","kind":"textbox","name":"right-content","position":{"left":712,"top":325,"width":430,"height":200},"text":"Add the second point of view, approach, or comparison item here.","style":{"fontSize":22,"typeface":"Arial","color":"#75685F","alignment":"left"},"geometry":"rect","lineWidth":0}
+]}

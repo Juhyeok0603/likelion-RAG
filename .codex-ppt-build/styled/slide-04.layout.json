@@ -1,0 +1,11 @@
+{"schema":"openai.presentation.layout/v5","unit":"px","slide":{"id":"sl/jfhuj6","index":3,"layout":{"id":"ly/tcvyh87m","name":"Blank"},"backgroundColor":"rgba(255,255,255,1)","position":{"left":0,"top":0,"width":1280,"height":720}},
+"elements":[
+{"id":"im/atonyxk7","kind":"image","name":"body-background","position":{"left":0,"top":0,"width":1280,"height":720},"fit":"cover","alt":"Abstract pale yellow and soft orange layered paper background"},
+{"id":"sh/wnm5cne1","kind":"shape","name":"body-sheet","position":{"left":52,"top":44,"width":1060,"height":632},"geometry":"roundRect","fillColor":"#FFFFFF","lineWidth":0},
+{"id":"sh/h8v6lsfm","kind":"textbox","name":"body-index","position":{"left":86,"top":76,"width":86,"height":52},"text":"01","style":{"fontSize":22,"typeface":"Arial","color":"#FF8733","bold":true,"alignment":"left"},"geometry":"rect","lineWidth":0},
+{"id":"sh/mhkn6dwz","kind":"textbox","name":"body-title","position":{"left":86,"top":138,"width":760,"height":76},"text":"SLIDE TITLE","style":{"fontSize":44,"typeface":"Arial","color":"#2C221D","bold":true,"alignment":"left"},"geometry":"rect","lineWidth":0},
+{"id":"sh/7it4fixk","kind":"textbox","name":"body-lead","position":{"left":86,"top":270,"width":430,"height":126},"text":"A concise statement that frames the slide","style":{"fontSize":31,"typeface":"Arial","color":"#E96816","bold":true,"alignment":"left"},"geometry":"rect","lineWidth":0},
+{"id":"sh/8j258ne5","kind":"shape","name":"body-copy-field","position":{"left":592,"top":238,"width":450,"height":326},"geometry":"roundRect","fillColor":"#FFF8DB","lineWidth":0},
+{"id":"sh/9kvmhsfq","kind":"textbox","name":"body-copy","position":{"left":636,"top":292,"width":358,"height":224},"text":"Add the main content here. Keep the text short enough to scan during a presentation.\n\nUse this area for supporting details or a short explanation.","style":{"fontSize":21,"typeface":"Arial","color":"#2C221D","alignment":"left"},"geometry":"rect","lineWidth":0},
+{"id":"sh/ydkn2dw3","kind":"shape","name":"body-accent-dot","position":{"left":1058,"top":72,"width":34,"height":34},"geometry":"ellipse","fillColor":"#FF8733","lineWidth":0}
+]}

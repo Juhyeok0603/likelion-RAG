@@ -1,0 +1,7 @@
+{"schema":"openai.presentation.layout/v5","unit":"px","slide":{"id":"sl/z7dovs","index":1,"layout":{"id":"ly/vmtgjuxg","name":"Blank"},"backgroundColor":"rgba(255,255,255,1)","position":{"left":0,"top":0,"width":1280,"height":720}},
+"elements":[
+{"id":"sh/pobypwbu","kind":"shape","name":"agenda-yellow","position":{"left":785,"top":94,"width":400,"height":540},"geometry":"roundRect","fillColor":"#FFF9E8","lineWidth":0},
+{"id":"sh/2l0zuhc3","kind":"textbox","name":"agenda-title","position":{"left":78,"top":70,"width":560,"height":90},"text":"AGENDA","style":{"fontSize":42,"typeface":"Arial","color":"#2F2925","bold":true,"alignment":"left"},"geometry":"rect","lineWidth":0},
+{"id":"sh/3mtgnmto","kind":"textbox","name":"agenda-body","position":{"left":80,"top":215,"width":610,"height":360},"text":"01  First topic\n\n02  Second topic\n\n03  Third topic\n\n04  Fourth topic","style":{"fontSize":26,"typeface":"Arial","color":"#2F2925","alignment":"left"},"geometry":"rect","lineWidth":0},
+{"id":"sh/gjihs7ux","kind":"textbox","name":"agenda-note","position":{"left":840,"top":230,"width":290,"height":180},"text":"Add a short note or key message here.","style":{"fontSize":25,"typeface":"Arial","color":"#F58A3C","bold":true,"alignment":"left"},"geometry":"rect","lineWidth":0}
+]}

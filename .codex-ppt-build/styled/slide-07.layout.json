@@ -1,0 +1,10 @@
+{"schema":"openai.presentation.layout/v5","unit":"px","slide":{"id":"sl/xqzwao","index":6,"layout":{"id":"ly/tcvyh87m","name":"Blank"},"backgroundColor":"rgba(255,255,255,1)","position":{"left":0,"top":0,"width":1280,"height":720}},
+"elements":[
+{"id":"im/v2987adk","kind":"image","name":"quote-background","position":{"left":0,"top":0,"width":1280,"height":720},"fit":"cover","alt":"Abstract pale yellow and soft orange layered paper background"},
+{"id":"sh/xkjqxcfe","kind":"shape","name":"quote-sheet","position":{"left":86,"top":88,"width":1108,"height":544},"geometry":"roundRect","fillColor":"#FFFFFF","lineWidth":0},
+{"id":"sh/wja9o7yt","kind":"textbox","name":"quote-mark","position":{"left":128,"top":118,"width":120,"height":120},"text":"“","style":{"fontSize":99.84,"typeface":"Arial","color":"#FF8733","bold":true,"alignment":"left"},"geometry":"rect","lineWidth":0},
+{"id":"sh/jml8zmxk","kind":"textbox","name":"quote-text","position":{"left":236,"top":218,"width":820,"height":190},"text":"Add one memorable sentence or the main takeaway here","style":{"fontSize":42,"typeface":"Arial","color":"#2C221D","bold":true,"alignment":"center"},"geometry":"rect","lineWidth":0},
+{"id":"sh/ylsrqhgz","kind":"shape","name":"quote-source-dot","position":{"left":506,"top":492,"width":18,"height":18},"geometry":"ellipse","fillColor":"#FF8733","lineWidth":0},
+{"id":"sh/lo3q1wfq","kind":"textbox","name":"quote-source","position":{"left":540,"top":490,"width":270,"height":28},"text":"SOURCE OR SPEAKER","style":{"fontSize":14,"typeface":"Arial","color":"#E96816","bold":true,"alignment":"left"},"geometry":"rect","lineWidth":0},
+{"id":"sh/knu9sry5","kind":"textbox","name":"quote-page","position":{"left":1080,"top":568,"width":70,"height":26},"text":"07","style":{"fontSize":14,"typeface":"Arial","color":"#2C221D","bold":true,"alignment":"right"},"geometry":"rect","lineWidth":0}
+]}
