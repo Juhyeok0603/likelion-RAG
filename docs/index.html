@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Ollama와 Qdrant로 따라 하는 로컬 RAG 실습">
+  <title>RAG Orange Lab</title>
+    <link rel="stylesheet" href="styles.css?v=4">
+</head>
+<body>
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="실습 목차">
+      <a class="brand" href="#intro"><span class="brand-mark">R</span><span>RAG <strong>Orange Lab</strong></span></a>
+      <div class="progress-card">
+        <div class="progress-label"><span>진행률</span><strong id="progressText">0 / 6</strong></div>
+        <div class="progress-track"><span id="progressBar"></span></div>
+      </div>
+      <nav>
+        <a href="#intro">시작</a>
+        <a href="#concepts">LLM과 RAG 비교</a>
+        <a href="#map">전체 흐름</a>
+        <a href="#embedding">임베딩·벡터·차원</a>
+        <a href="#step-1">01 DB 서버 켜기</a>
+        <a href="#qdrant-guide">Qdrant 보는 법</a>
+        <a href="#step-2">02 DB 확인</a>
+        <a href="#step-3">03 지식 저장</a>
+        <a href="#step-4">04 질문 임베딩</a>
+        <a href="#step-5">05 유사도 검색</a>
+        <a href="#step-6">06 LLM 답변</a>
+        <a href="#chatbot">직접 질문하기</a>
+        <a href="#missions">과제</a>
+      </nav>
+      <p class="sidebar-note">코드를 새로 작성하지 않습니다.<br>명령을 실행하고 결과를 해석합니다.</p>
+    </aside>
+
+    <main id="top">
+      <section id="intro" class="hero">
+        <div class="eyebrow">LIKELION · LOCAL RAG WORKSHOP</div>
+        <h1>검색부터 답변까지,<br><em>눈으로 확인하는 RAG</em></h1>
+        <p class="hero-copy">백서진·김서진·박한빈·윤주혁 운영진 4인방의 추격을 피해, 공지와 마감에서 살아남는 데이터를 직접 임베딩하고 검색합니다.</p>
+        <div class="hero-actions">
+          <a class="primary-button" href="#step-1">실습 시작하기</a>
+          <a class="ghost-button" href="http://localhost:6333/dashboard" target="_blank" rel="noreferrer">Qdrant 대시보드 ↗</a>
+        </div>
+        <div class="stack-strip" aria-label="사용 기술">
+          <span>EMBEDDING <b>bge-m3</b></span><span>VECTOR DB <b>Qdrant</b></span>
+          <span>LLM <b>qwen3:8b</b></span><span>RUNTIME <b>Ollama</b></span>
+        </div>
+      </section>
+
+      <section id="concepts" class="content-section concepts-section">
+        <div class="section-heading"><span class="section-number">00</span><div><p class="kicker">BEFORE RAG</p><h2>먼저, 일반 LLM은 어떻게 답할까?</h2></div></div>
+        <p class="lead">LLM은 질문을 잘게 나눈 뒤, 학습하면서 익힌 패턴을 바탕으로 다음에 올 말을 하나씩 예측해 답변을 만듭니다.</p>
+        <div class="flow-map" aria-label="일반 LLM의 답변 생성 흐름">
+          <article><span>01 · INPUT</span><strong>질문 입력</strong><small>“이번 과제 마감은 언제야?”</small></article><i>→</i>
+          <article><span>02 · TOKEN</span><strong>토큰으로 분리</strong><small>문장을 모델이 처리할 작은 단위로 나눔</small></article><i>→</i>
+          <article><span>03 · PREDICT</span><strong>다음 토큰 예측</strong><small>학습된 패턴과 현재 문맥을 사용</small></article><i>→</i>
+          <article><span>04 · OUTPUT</span><strong>답변 생성</strong><small>예측을 반복해 문장을 완성</small></article>
+        </div>
+        <div class="callout"><strong>중요한 한계</strong><span>일반 LLM은 지금 우리 컴퓨터의 공지 파일이나 Qdrant를 자동으로 읽지 않습니다. 학습하지 않은 최신 동아리 정보는 모르거나 그럴듯하게 추측할 수 있습니다.</span></div>
+        <div class="concept-compare">
+          <article><span>일반 LLM</span><strong>질문 → 학습된 패턴 → 답변</strong><p>모델 내부에 이미 학습된 정보와 현재 대화만 사용합니다. 우리 동아리의 최신 공지는 알 수 없습니다.</p></article>
+          <article class="accent"><span>RAG</span><strong>질문 → 외부 문서 검색 → 문서와 질문 → 답변</strong><p>답변 전에 우리가 저장한 자료를 찾아 LLM에 함께 건넵니다. 모델을 다시 학습하지 않아도 새 자료를 참고할 수 있습니다.</p></article>
+        </div>
+        <div class="definition-panel">
+          <p class="definition-copy"><strong>RAG</strong><span>Retrieval-Augmented Generation</span></p>
+          <p><b>검색 증강 생성.</b> LLM의 기억을 늘리는 학습법이 아니라, 답변 직전에 관련 자료를 검색해 참고 자료로 건네는 구조입니다.</p>
+        </div>
+      </section>
+
+      <section id="map" class="content-section">
+        <div class="section-heading"><span class="section-number">FLOW</span><div><p class="kicker">일반 LLM과의 결정적 차이</p><h2>RAG는 답변 전에 자료를 찾는다</h2></div></div>
+        <p class="lead">검색하려면 문서를 먼저 벡터 DB에 저장해야 합니다. 저장은 한 번 준비하고, 검색과 답변은 질문할 때마다 반복합니다.</p>
+        <div class="rag-flow">
+          <div class="flow-lane">
+            <div class="lane-label"><span>준비할 때</span><b>INDEXING</b></div>
+            <div class="flow-steps">
+              <article><span>1</span><strong>지식 문서</strong><small>Markdown</small></article><i>→</i>
+              <article><span>2</span><strong>문서 분할</strong><small>작은 문단</small></article><i>→</i>
+              <article><span>3</span><strong>임베딩</strong><small>bge-m3</small></article><i>→</i>
+              <article><span>4</span><strong>저장</strong><small>Qdrant</small></article>
+            </div>
+          </div>
+          <div class="flow-lane query-lane">
+            <div class="lane-label"><span>질문할 때</span><b>RETRIEVAL + GENERATION</b></div>
+            <div class="flow-steps six">
+              <article><span>1</span><strong>질문</strong><small>사용자 입력</small></article><i>→</i>
+              <article><span>2</span><strong>질문 임베딩</strong><small>같은 bge-m3</small></article><i>→</i>
+              <article><span>3</span><strong>유사도 검색</strong><small>Top 3</small></article><i>→</i>
+              <article><span>4</span><strong>문서 + 질문</strong><small>프롬프트</small></article><i>→</i>
+              <article><span>5</span><strong>LLM 답변</strong><small>qwen3:8b</small></article>
+            </div>
+          </div>
+        </div>
+        <div class="callout"><strong>오늘의 관찰 포인트</strong><span>임베딩 값 → DB 포인트 → 코사인 유사도 → 검색 문서 → LLM 답변이 어떻게 이어지는지 확인합니다.</span></div>
+      </section>
+
+      <section id="embedding" class="content-section embedding-section">
+        <div class="section-heading"><span class="section-number">VEC</span><div><p class="kicker">EMBEDDING BASICS</p><h2>문장의 의미를 숫자 좌표로 표현하기</h2></div></div>
+        <div class="term-grid">
+          <article><span>VECTORIZE</span><h3>벡터화</h3><p>글, 이미지처럼 컴퓨터가 바로 비교하기 어려운 데이터를 숫자 배열로 바꾸는 넓은 개념입니다.</p></article>
+          <article class="accent"><span>EMBED</span><h3>임베딩</h3><p>모델이 데이터의 특징이나 의미가 가까이 모이도록 만든 벡터입니다. 의미를 보존하는 벡터화라고 볼 수 있습니다.</p></article>
+          <article><span>COMPARE</span><h3>벡터 검색</h3><p>질문 벡터와 문서 벡터의 방향을 비교해 의미가 가까운 문서를 찾습니다.</p></article>
+        </div>
+        <div class="dimension-demo">
+          <div class="dimension-copy"><span class="mini-label">DIMENSION</span><h3>1,024차원이란?</h3><p>bge-m3가 문장 하나를 <strong>1,024개의 숫자</strong>로 표현한다는 뜻입니다. 벡터의 길이가 1,024라는 의미이지, 문장이 1,024개 단어라는 뜻은 아닙니다.</p><p>각 숫자는 모델이 학습한 의미 좌표의 일부입니다. 보통 “1번은 과제, 2번은 날짜”처럼 사람이 차원 하나씩 해석하지 않습니다.</p></div>
+          <div class="vector-visual" aria-label="1024차원 벡터 예시"><code>-0.0329</code><code>0.0215</code><code>-0.0161</code><code>0.0084</code><code>…</code><code>0.0412</code><b>총 1,024개</b></div>
+        </div>
+        <div class="rules-grid"><article><b>같은 모델</b><span>문서와 질문은 모두 bge-m3로 임베딩해야 같은 공간에서 비교할 수 있습니다.</span></article><article><b>같은 차원</b><span>Qdrant 컬렉션에 저장되는 벡터는 모두 1,024차원이어야 합니다.</span></article><article><b>유사도 ≠ 확률</b><span>0.55가 55% 정답이라는 뜻은 아닙니다. 질문과 자료를 바꿔 기준을 직접 관찰해야 합니다.</span></article></div>
+      </section>
+
+      <section id="step-1" class="content-section lesson">
+        <div class="section-heading"><span class="section-number">01</span><div><p class="kicker">VECTOR DB</p><h2>Qdrant 서버 켜기</h2></div></div>
+        <p class="lead">먼저 Python 가상환경을 만들고 활성화합니다. 그다음 Ollama 모델 두 개와 Qdrant 1.20 이미지를 내려받아 6333번 포트에 실행합니다.</p>
+        <div class="code-card"><div class="code-title"><span>Windows PowerShell · 가상환경 만들고 켜기</span><button class="copy-button">복사</button></div><pre><code>python -m venv .venv
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt</code></pre></div>
+        <div class="code-card"><div class="code-title"><span>macOS Terminal · 가상환경 만들고 켜기</span><button class="copy-button">복사</button></div><pre><code>python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt</code></pre></div>
+        <div class="result-card"><span class="result-label">활성화 확인</span><code>터미널 입력 줄 앞에 (.venv)가 표시됩니다.</code></div>
+        <div class="code-card"><div class="code-title"><span>PowerShell · Ollama 모델 설치</span><button class="copy-button">복사</button></div><pre><code>ollama pull bge-m3
+ollama pull qwen3:8b
+ollama list</code></pre></div>
+        <div class="code-card"><div class="code-title"><span>PowerShell · 설치 및 실행</span><button class="copy-button">복사</button></div><pre><code>docker pull qdrant/qdrant:v1.20.0
+docker compose up -d
+docker compose ps</code></pre></div>
+        <div class="result-card"><span class="result-label">성공 기준</span><code>rag-qdrant · Up · 127.0.0.1:6333→6333</code></div>
+        <a class="inline-link" href="http://localhost:6333/dashboard" target="_blank" rel="noreferrer">대시보드에서 서버 확인하기 ↗</a>
+        <button class="complete-button" data-complete="1">✓ 이 단계 완료</button>
+      </section>
+
+      <section id="qdrant-guide" class="content-section qdrant-guide">
+        <div class="section-heading"><span class="section-number">UI</span><div><p class="kicker">QDRANT DASHBOARD</p><h2>대시보드에서 무엇을 봐야 할까</h2></div></div>
+        <p class="lead"><a href="http://localhost:6333/dashboard" target="_blank" rel="noreferrer">localhost:6333/dashboard</a>를 열고 <strong>Collections → joongbu_survival</strong> 순서로 들어갑니다.</p>
+        <ol class="dashboard-steps">
+          <li><span>1</span><div><b>Collections</b><p>벡터를 묶어 둔 컬렉션 목록을 확인합니다.</p></div></li>
+          <li><span>2</span><div><b>joongbu_survival</b><p>이번 실습에서 만든 컬렉션을 선택합니다.</p></div></li>
+          <li><span>3</span><div><b>Overview / Configuration</b><p>상태, 포인트 수, 벡터 크기와 거리 방식을 봅니다.</p></div></li>
+          <li><span>4</span><div><b>Points</b><p>각 문서 조각의 ID, vector, payload를 펼쳐 확인합니다.</p></div></li>
+        </ol>
+        <div class="qdrant-structure">
+          <div class="collection-box"><span>COLLECTION</span><strong>joongbu_survival</strong><small>같은 벡터 설정을 공유하는 포인트 묶음</small></div>
+          <div class="point-box"><span>POINT</span><div><code>id</code><p>포인트를 구분하는 고유 번호</p></div><div><code>vector[1024]</code><p>검색에 사용하는 의미 좌표</p></div><div><code>payload</code><p>title, document, source 같은 원문 정보</p></div></div>
+        </div>
+        <div class="dashboard-table-wrap">
+          <table class="dashboard-table">
+            <thead><tr><th>화면 항목</th><th>의미</th><th>실습에서 보는 값</th></tr></thead>
+            <tbody>
+              <tr><td><code>status</code></td><td>컬렉션 사용 상태</td><td><b class="status-green">green</b>이면 검색 준비 완료</td></tr>
+              <tr><td><code>optimizer_status</code></td><td>백그라운드 정리·색인 상태</td><td><code>ok</code>면 정상</td></tr>
+              <tr><td><code>points_count</code></td><td>저장된 포인트 수</td><td>Markdown의 <code>##</code> 문단 수와 비교</td></tr>
+              <tr><td><code>indexed_vectors_count</code></td><td>검색 인덱스에 들어간 벡터 수</td><td>작은 실습 데이터에서는 포인트 수와 다르게 보일 수 있음</td></tr>
+              <tr><td><code>segments_count</code></td><td>Qdrant가 데이터를 나눠 관리하는 내부 저장 단위 수</td><td>직접 맞추는 값이 아니라 상태 확인용</td></tr>
+              <tr><td><code>size</code></td><td>벡터 차원 수</td><td><code>1024</code>, bge-m3 출력 길이</td></tr>
+              <tr><td><code>distance</code></td><td>벡터를 비교하는 계산 방식</td><td><code>Cosine</code>, 방향이 가까울수록 높은 점수</td></tr>
+              <tr><td><code>payload_schema</code></td><td>필터 검색용 payload 인덱스 정보</td><td>이번 실습은 별도 필터 인덱스가 없어 비어 있어도 정상</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="qdrant-tips"><article><b>green이 아니면?</b><span>yellow는 저장 직후 최적화 중일 수 있습니다. 잠시 뒤 새로고침합니다. red라면 서버 로그를 확인합니다.</span></article><article><b>벡터가 안 보이면?</b><span>Points 화면에서 포인트를 펼치고 vector 표시 옵션을 켭니다. payload만 보이는지 먼저 확인합니다.</span></article></div>
+        <p class="source-note">더 보기: <a href="https://qdrant.tech/documentation/web-ui/" target="_blank" rel="noreferrer">Qdrant Web UI</a> · <a href="https://qdrant.tech/documentation/manage-data/collections/" target="_blank" rel="noreferrer">Collections 공식 문서</a></p>
+      </section>
+
+      <section id="step-2" class="content-section lesson">
+        <div class="section-heading"><span class="section-number">02</span><div><p class="kicker">CONNECTION</p><h2>DB 연결과 컬렉션 확인</h2></div></div>
+        <p class="lead">Python 클라이언트가 Qdrant에 연결되는지, 현재 어떤 컬렉션이 있는지 확인합니다.</p>
+        <div class="code-card"><div class="code-title"><span>PowerShell</span><button class="copy-button">복사</button></div><pre><code>.\.venv\Scripts\python.exe steps\check_db.py</code></pre></div>
+        <div class="split-panel"><div><span class="mini-label">실행 파일</span><code>steps/check_db.py</code></div><div><span class="mini-label">확인 값</span><code>서버 주소 · 컬렉션 · 포인트 수</code></div></div>
+        <button class="complete-button" data-complete="2">✓ 이 단계 완료</button>
+      </section>
+
+      <section id="step-3" class="content-section lesson">
+        <div class="section-heading"><span class="section-number">03</span><div><p class="kicker">INDEXING</p><h2>지식 데이터를 임베딩해 저장</h2></div></div>
+        <p class="lead"><code>## 제목</code> 단위로 문서를 나누고, bge-m3가 각 조각을 1,024개의 숫자로 바꿉니다.</p>
+        <div class="code-card"><div class="code-title"><span>PowerShell</span><button class="copy-button">복사</button></div><pre><code>.\.venv\Scripts\python.exe steps\store_knowledge.py</code></pre></div>
+        <div class="terminal-output"><div class="terminal-dots"><i></i><i></i><i></i></div><pre>저장 완료: 9개 문서
+임베딩 차원: 1024
+첫 벡터: [-0.032915, 0.021506, -0.016131, ...]</pre></div>
+        <div class="explain-grid"><article><b>vector</b><span>의미를 표현하는 1,024개 숫자</span></article><article><b>payload</b><span>제목, 원문, 출처</span></article><article><b>point</b><span>vector와 payload를 묶은 레코드</span></article></div>
+        <button class="complete-button" data-complete="3">✓ 이 단계 완료</button>
+      </section>
+
+      <section id="step-4" class="content-section lesson">
+        <div class="section-heading"><span class="section-number">04</span><div><p class="kicker">QUERY VECTOR</p><h2>질문도 같은 모델로 임베딩</h2></div></div>
+        <p class="lead">문서와 질문이 같은 벡터 공간에 있어야 서로 가까운지 계산할 수 있습니다.</p>
+        <div class="code-card"><div class="code-title"><span>PowerShell</span><button class="copy-button">복사</button></div><pre><code>.\.venv\Scripts\python.exe steps\embed_question.py "과제를 놓치지 않으려면?"</code></pre></div>
+        <div class="result-card"><span class="result-label">질문 벡터</span><code>[-0.037623, 0.000568, -0.021621, ...]</code></div>
+        <button class="complete-button" data-complete="4">✓ 이 단계 완료</button>
+      </section>
+
+      <section id="step-5" class="content-section lesson">
+        <div class="section-heading"><span class="section-number">05</span><div><p class="kicker">RETRIEVAL</p><h2>가장 비슷한 문서 Top 3 검색</h2></div></div>
+        <p class="lead">Qdrant가 질문 벡터와 문서 벡터의 코사인 유사도를 계산합니다. 1에 가까울수록 방향이 비슷합니다.</p>
+        <div class="code-card"><div class="code-title"><span>PowerShell</span><button class="copy-button">복사</button></div><pre><code>.\.venv\Scripts\python.exe steps\search_similar.py "과제를 놓치지 않으려면?"</code></pre></div>
+        <div class="score-list"><div><b>01</b><span>과제는 마감보다 제출 확인이 끝이다</span><strong>0.5594</strong></div><div><b>02</b><span>시험 준비는 범위 확인부터 시작하기</span><strong>0.5409</strong></div><div><b>03</b><span>수강신청은 후보 시간표까지 준비하기</span><strong>0.5201</strong></div></div>
+        <button class="complete-button" data-complete="5">✓ 이 단계 완료</button>
+      </section>
+
+      <section id="step-6" class="content-section lesson">
+        <div class="section-heading"><span class="section-number">06</span><div><p class="kicker">GENERATION</p><h2>검색 문서와 질문을 LLM에 전달</h2></div></div>
+        <p class="lead">LLM은 검색된 세 문서를 참고 자료로 받고, 그 안에 있는 내용만 사용해 답합니다.</p>
+        <div class="code-card"><div class="code-title"><span>PowerShell</span><button class="copy-button">복사</button></div><pre><code>.\.venv\Scripts\python.exe steps\generate_answer.py "과제를 놓치지 않으려면?"</code></pre></div>
+        <blockquote>“과제 공지가 나오면 요구 형식, 파일 이름, 제출 위치와 마감 시각을 먼저 확인하고, 제출 후 정상 제출 여부를 다시 확인해야 한다.”</blockquote>
+        <button class="complete-button" data-complete="6">✓ 이 단계 완료</button>
+      </section>
+
+      <section id="chatbot" class="content-section chatbot-section">
+        <div class="section-heading"><span class="section-number">LAB</span><div><p class="kicker">LIVE RAG</p><h2>이제 챗봇처럼 질문해 보기</h2></div></div>
+        <p class="lead">현재 PC의 bge-m3 → Qdrant → qwen3:8b 흐름을 실제로 실행합니다. CPU에서는 답변에 시간이 걸릴 수 있습니다.</p>
+        <div class="chat-window">
+          <div class="chat-header"><span class="online-dot"></span><div><strong>중부대 멋사 생존봇</strong><small>local · grounded by Qdrant</small></div></div>
+          <div id="chatMessages" class="chat-messages" aria-live="polite"><div class="message bot"><span>BOT</span><p>운영진 4인방에게서 살아남는 방법을 물어보세요. 검색 문서와 유사도도 함께 보여드릴게요.</p></div></div>
+          <form id="chatForm" class="chat-form"><label class="sr-only" for="chatInput">질문</label><input id="chatInput" maxlength="300" placeholder="예: 팀플에서 연락이 안 되는 팀원이 있으면?" required><button type="submit">전송 ↗</button></form>
+          <div class="suggestions"><button type="button">백서진의 공지 레이더에서 도망치려면?</button><button type="button">박한빈의 코드 리뷰에서 살아남는 법은?</button><button type="button">운영진 4명이 동시에 오면 어떡해?</button></div>
+        </div>
+      </section>
+
+      <section id="missions" class="content-section missions-section">
+        <div class="section-heading"><span class="section-number">NEXT</span><div><p class="kicker">완성하고 흔들어 보기</p><h2>과제: 나만의 RAG 챗봇</h2></div></div>
+        <article class="main-mission">
+          <div class="mission-top"><span>필수 과제</span><strong>다음 주까지</strong></div>
+          <div class="main-mission-copy"><div><h3>주제를 정하고 실제로 질문할 수 있는 챗봇을 완성합니다</h3><p>동아리 안내, 게임 공략, 맛집 기록, 수업 노트처럼 본인이 잘 아는 자료를 사용하세요. 제공된 코드를 복사해 데이터와 설정을 바꾸는 것으로 충분합니다.</p></div><span class="mission-badge">CHATBOT</span></div>
+          <ol class="mission-checklist"><li><b>지식 데이터</b><span><code>##</code> 문단 10개 이상 작성</span></li><li><b>저장과 확인</b><span>새 컬렉션에 적재하고 Qdrant 화면 캡처</span></li><li><b>질문 설계</b><span>답이 있는 질문 5개, 자료에 없는 질문 2개</span></li><li><b>챗봇 실행</b><span>검색 문서와 유사도를 확인하며 답변 테스트</span></li><li><b>회고</b><span>잘 찾은 질문과 실패한 질문을 하나씩 설명</span></li></ol>
+          <p class="deliverable"><b>제출:</b> 지식 Markdown · 실행 화면 · 질문 7개와 결과 · 짧은 회고</p>
+        </article>
+        <div class="optional-heading"><span>선택 과제</span><h3>챗봇을 자기 방식으로 커스터마이징</h3><p>아래에서 하나만 골라도 됩니다. 완성 여부보다 바꾸기 전후를 비교하는 과정이 중요합니다.</p></div>
+        <div class="custom-mission-grid">
+          <article><span>01</span><h4>유사도 안전장치</h4><p>가장 높은 유사도가 기준보다 낮으면 LLM을 호출하지 않고 “근거를 찾지 못했습니다”라고 답하게 만듭니다.</p><small><code>rag_service.py</code>의 <code>hits</code> 확인 뒤 조건 추가</small></article>
+          <article><span>02</span><h4>검색 품질 흔들기</h4><p>같은 뜻의 다른 표현, 오타, 지나치게 짧은 질문, 키워드만 같은 엉뚱한 질문을 넣어 순위 변화를 기록합니다.</p><small>질문별 Top 3와 점수 비교</small></article>
+          <article><span>03</span><h4>Top K 비교</h4><p>검색 문서 수를 1, 3, 5로 바꾸고 답변이 더 정확해지는지, 오히려 잡음이 늘어나는지 비교합니다.</p><small><code>limit=1 / 3 / 5</code></small></article>
+          <article><span>04</span><h4>말투와 역할</h4><p>시스템 프롬프트를 바꿔 튜터, 공지봇, 퀴즈봇처럼 답변 형식을 변경합니다.</p><small>근거 제한 규칙은 유지</small></article>
+        </div>
+        <div class="threshold-lab"><div><span class="mini-label">실험 예시</span><h3>유사도 기준은 직접 찾아야 합니다</h3><p><code>0.45</code>는 정답이 아니라 시작점입니다. 0.35, 0.45, 0.55를 차례로 적용해 정상 질문까지 막히는지 비교하세요.</p></div><div class="threshold-scale"><span>0.35<small>느슨함</small></span><span class="active">0.45<small>시작점</small></span><span>0.55<small>엄격함</small></span></div></div>
+        <div class="quality-test"><strong>검색 품질을 흔드는 질문 예시</strong><div><span>표현 바꾸기</span><code>과제를 안 놓치려면? / 제출 실수를 줄이는 법?</code></div><div><span>오타 넣기</span><code>과재 마감 어떠케 확인해?</code></div><div><span>키워드 함정</span><code>마감이라는 단어가 들어간 모든 규정은?</code></div><div><span>자료 밖 질문</span><code>오늘 서울 날씨는?</code></div></div>
+        <div class="rubric"><strong>평가 기준</strong><span>코드의 양보다 지식 구성, 질문 설계, 검색 결과 관찰, 커스터마이징 전후의 설명을 봅니다.</span></div>
+      </section>
+
+      <footer><span>RAG Orange Lab</span><p>검색 결과를 믿기 전에 어떤 문서가 근거가 되었는지 먼저 확인하세요.</p></footer>
+      <nav id="pageControls" class="page-controls" aria-label="페이지 이동">
+        <button id="previousPage" type="button">← 이전</button>
+        <div><strong id="currentPageTitle">시작</strong><span><b id="currentPage">1</b> / <span id="totalPages">1</span></span></div>
+        <button id="nextPage" type="button">다음 →</button>
+      </nav>
+    </main>
+  </div>
+  <script src="app.js?v=2"></script>
+</body>
+</html>
